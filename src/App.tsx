@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { StoryIntro } from './components/StoryIntro';
 import { SwipeCard } from './components/SwipeCard';
 import { QuizCard } from './components/QuizCard';
@@ -36,6 +36,7 @@ export default function App() {
   const [badges, setBadges] = useState<string[]>([]);
   const [showFeedback, setShowFeedback] = useState(false);
   const [showMilestone, setShowMilestone] = useState(false);
+  const [pendingAdvance, setPendingAdvance] = useState(false);
   const [currentFeedback, setCurrentFeedback] = useState<{
     isCorrect: boolean;
     feedback: string;
@@ -49,6 +50,20 @@ export default function App() {
   const milestoneToShow = storyMilestones.find(
     (m) => m.at === completedScenarios.length && showMilestone
   );
+
+  // Effect to handle milestone checking after completing scenarios
+  useEffect(() => {
+    if (pendingAdvance && !showFeedback) {
+      const milestone = storyMilestones.find((m) => m.at === completedScenarios.length);
+      if (milestone) {
+        setShowMilestone(true);
+        setBadges((prev) => [...prev, milestone.badge]);
+      } else {
+        setCurrentScenarioIndex((prev) => prev + 1);
+      }
+      setPendingAdvance(false);
+    }
+  }, [pendingAdvance, completedScenarios.length, showFeedback]);
 
   const handleStart = () => {
     setGameStarted(true);
@@ -69,12 +84,8 @@ export default function App() {
 
   const handleInfoContinue = () => {
     // Info cards don't affect score, just continue
-    setCompletedScenarios((prev) => {
-      const newCompleted = [...prev, currentScenario.id];
-      // Check for milestone after state update
-      setTimeout(() => checkForMilestone(newCompleted.length), 0);
-      return newCompleted;
-    });
+    setCompletedScenarios((prev) => [...prev, currentScenario.id]);
+    setPendingAdvance(true);
   };
 
   const processAnswer = (isCorrect: boolean, feedback: string, explanation: string) => {
@@ -100,21 +111,10 @@ export default function App() {
     setShowFeedback(true);
   };
 
-  const checkForMilestone = (completedCount: number) => {
-    const milestone = storyMilestones.find((m) => m.at === completedCount);
-    if (milestone) {
-      setShowMilestone(true);
-      setBadges((prev) => [...prev, milestone.badge]);
-    } else {
-      setCurrentScenarioIndex((prev) => prev + 1);
-    }
-  };
-
   const handleFeedbackContinue = () => {
     setShowFeedback(false);
     setCurrentFeedback(null);
-    // Use the current length since state has already updated
-    checkForMilestone(completedScenarios.length);
+    setPendingAdvance(true);
   };
 
   const handleMilestoneContinue = () => {
@@ -132,6 +132,7 @@ export default function App() {
     setBadges([]);
     setShowFeedback(false);
     setShowMilestone(false);
+    setPendingAdvance(false);
     setCurrentFeedback(null);
   };
 
