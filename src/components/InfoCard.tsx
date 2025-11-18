@@ -12,26 +12,26 @@ interface InfoCardProps {
 
 export function InfoCard({ scenario, onContinue, imageUrl }: InfoCardProps) {
   return (
-    <div className="w-full max-w-md mx-auto">
+    <div className="w-full max-w-2xl mx-auto">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-gradient-to-br from-cyan-500 to-blue-600 rounded-3xl shadow-2xl overflow-hidden"
+        className="bg-gradient-to-br from-cyan-500 to-blue-600 rounded-3xl shadow-2xl overflow-hidden min-h-[500px]"
       >
-        <div className="relative h-48 overflow-hidden">
+        <div className="relative h-56 overflow-hidden">
           <ImageWithFallback
             src={imageUrl}
             alt={scenario.title}
             className="w-full h-full object-cover opacity-80"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-blue-900/80 to-transparent" />
-          <div className="absolute top-4 left-4 bg-cyan-400 text-blue-900 px-3 py-1 rounded-full text-sm flex items-center gap-2">
+          <div className="absolute top-4 left-4 bg-cyan-400 text-blue-900 px-3 py-1 rounded-full flex items-center gap-2">
             <BookOpen className="w-4 h-4" />
-            Info Snack
+            <span>Info Snack</span>
           </div>
         </div>
 
-        <div className="p-6 space-y-4 text-white">
+        <div className="p-8 space-y-5 text-white">
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
