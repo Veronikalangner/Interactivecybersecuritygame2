@@ -69,9 +69,12 @@ export default function App() {
 
   const handleInfoContinue = () => {
     // Info cards don't affect score, just continue
-    const newCompletedCount = completedScenarios.length + 1;
-    setCompletedScenarios((prev) => [...prev, currentScenario.id]);
-    checkForMilestone(newCompletedCount);
+    setCompletedScenarios((prev) => {
+      const newCompleted = [...prev, currentScenario.id];
+      // Check for milestone after state update
+      setTimeout(() => checkForMilestone(newCompleted.length), 0);
+      return newCompleted;
+    });
   };
 
   const processAnswer = (isCorrect: boolean, feedback: string, explanation: string) => {
@@ -97,8 +100,8 @@ export default function App() {
     setShowFeedback(true);
   };
 
-  const checkForMilestone = (newCount: number) => {
-    const milestone = storyMilestones.find((m) => m.at === newCount);
+  const checkForMilestone = (completedCount: number) => {
+    const milestone = storyMilestones.find((m) => m.at === completedCount);
     if (milestone) {
       setShowMilestone(true);
       setBadges((prev) => [...prev, milestone.badge]);
@@ -110,8 +113,8 @@ export default function App() {
   const handleFeedbackContinue = () => {
     setShowFeedback(false);
     setCurrentFeedback(null);
-    const newCompletedCount = completedScenarios.length + 1;
-    checkForMilestone(newCompletedCount);
+    // Use the current length since state has already updated
+    checkForMilestone(completedScenarios.length);
   };
 
   const handleMilestoneContinue = () => {
